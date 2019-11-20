@@ -18,8 +18,8 @@ class CreateContratosTable extends Migration
             $table->string('codigo_contrato')->unique();
             $table->string('tipo_contrato');
             $table->string('fecha_alta');
-            $table->string('fecha_baja');
-            $table->string('motivo_baja');
+            $table->string('fecha_baja')->nullable();
+            $table->string('motivo_baja')->nullable();
 
             $table->integer('trabajador_id')->unsigned();
             $table->foreign('trabajador_id')->references('id')->on('trabajadores');

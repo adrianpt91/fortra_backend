@@ -2,31 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Contrato;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Validator;
 
-class ContratoController extends Controller
+use App\Trabajadores;
+use App\Contrato;
+
+use Response;
+
+class TrabajadorContratoController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($idTrabajador)
     {
-        //$contratos = Contrato::all();
-        $contratos = Contrato::with('trabajador', 'centro', 'cargo')->get();
-        $data = $contratos->toArray();
+        // Devolverá el contrato de un trabajador.
+		//return "Mostrando el contrato del trabajador con Id $idTrabajador";
+		$trabajador=Trabajadores::find($idTrabajador);
 
-        $response = [
-            'success' => true,
-            'data' => $data,
-            'message' => 'Contratos recuperados satisfactoriamente.'
-        ];
+		if (! $trabajador)
+		{
+			// Se devuelve un array errors con los errores encontrados y cabecera HTTP 404.
+			return response()->json(['errors'=>array(['code'=>404,'message'=>'No se encuentra un trabajador con ese código.'])],404);
+		}
 
-        return response()->json($response, 200);
+		return response()->json(['status'=>'ok','data'=>$trabajador->contrato()->get()],200);
+
+
     }
 
     /**
@@ -45,7 +50,7 @@ class ContratoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $idTrabajador)
     {
         $input = $request->all();
 
@@ -66,6 +71,15 @@ class ContratoController extends Controller
             return response()->json($response, 404);
         }
 
+        $trabajador=Trabajadores::find($idTrabajador);
+
+		if (! $trabajador)
+		{
+			// Se devuelve un array errors con los errores encontrados y cabecera HTTP 404.
+			return response()->json(['errors'=>array(['code'=>404,'message'=>'No se encuentra un trabajador con ese código.'])],404);
+        }
+        
+        //$contrato=$trabajador->contrato()->create($input);
         $contrato = Contrato::create($input);
         $data = $contrato->toArray();
 
@@ -75,7 +89,8 @@ class ContratoController extends Controller
             'message' => 'Contrato insertado correctamente.'
         ];
 
-        return response()->json($response, 200);
+        return response()->json($response, 201);
+    }
     }
 
     /**
@@ -86,26 +101,7 @@ class ContratoController extends Controller
      */
     public function show($id)
     {
-        $contrato = Contrato::find($id);
-        $data = $contrato->toArray();
-
-        if (is_null($contrato)) {
-            $response = [
-                'success' => false,
-                'data' => 'Empty',
-                'message' => 'Contrato no encontrado.'
-            ];
-            return response()->json($response, 404);
-        }
-
-
-        $response = [
-            'success' => true,
-            'data' => $data,
-            'message' => 'Contrato recuperado satisfactoriamente.'
-        ];
-
-        return response()->json($response, 200);
+        //
     }
 
     /**
@@ -128,17 +124,7 @@ class ContratoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $contrato = Contrato::find($id);
-        $contrato->codigo_contrato = $request->codigo_contrato;
-        $contrato->tipo_contrato = $request->tipo_contrato;
-        $contrato->fecha_alta = $request->fecha_alta;
-        $contrato->fecha_baja = $request->fecha_baja;
-        $contrato->motivo_baja = $request->motivo_baja;
-        $contrato->trabajador_id = $request->trabajador_id;
-        $contrato->centro_id = $request->centro_id;
-        $contrato->cargo_id = $request->cargo_id;
-        $contrato->save();
-        echo json_encode($contrato);
+        //
     }
 
     /**
@@ -149,7 +135,6 @@ class ContratoController extends Controller
      */
     public function destroy($id)
     {
-        $contrato = Contrato::find($id);
-        $contrato->delete();
+        //
     }
 }
