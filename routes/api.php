@@ -29,6 +29,7 @@ Route::resource('subcentro', 'SubcentroController');
 
 Route::resource('datos_militares', 'DatosMilitaresController');
 
-Route::resource('contratos', 'ContratoController', [ 'only'=>['index','show'] ]);
+//Route::resource('contratos', 'ContratoController', [ 'only'=>['index','show'] ]);
+Route::resource('contratos', 'ContratoController');
 
-Route::resource('trabajadores.contratos', 'TrabajadorContratoController', [ 'except'=>['show','edit','create'] ]);
+//Route::resource('trabajadores.contratos', 'TrabajadorContratoController', [ 'except'=>['show','edit','create'] ]);
