@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Subcentro;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Validator;
 
 class SubcentroController extends Controller
 {
@@ -15,8 +17,18 @@ class SubcentroController extends Controller
     public function index()
     {
         //Listar los subcentros
-        $subcentro = Subcentro::get();
-        echo json_encode($subcentro);
+
+        //$subcentro = Subcentro::all();
+        $subcentro = Subcentro::with('centro')->get();
+        $data = $subcentro->toArray();
+
+        $response = [
+            'success' => true,
+            'data' => $data,
+            'message' => 'Subcentros recuperados satisfactoriamente.'
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**
@@ -38,11 +50,34 @@ class SubcentroController extends Controller
     public function store(Request $request)
     {
        //insertar subcentro
-       $subcentro = new Subcentro();
-       $subcentro->nombre_sub = $request->nombre_sub;
-       $subcentro->save();
-       echo json_encode($subcentro);
-       return redirect('subcentro')->with('success', 'Subcentro agregado correctamente' );
+        
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'centro_id' => 'required',
+            'codigo_sub' => 'required',
+            'nombre_subcentro' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'data' => 'Validation Error.',
+                'message' => $validator->errors()
+            ];
+            return response()->json($response, 404);
+        }
+
+        $subcentro = Subcentro::create($input);
+        $data = $subcentro->toArray();
+
+        $response = [
+            'success' => true,
+            'data' => $data,
+            'message' => 'Subcentro insertado correctamente.'
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**
@@ -54,7 +89,27 @@ class SubcentroController extends Controller
     public function show($id)
     {
         //Mostrar centro indicado en id
-        return Subcentro::find($id);
+
+        $subcentro = Subcentro::find($id);
+        $data = $subcentro->toArray();
+
+        if (is_null($subcentro)) {
+            $response = [
+                'success' => false,
+                'data' => 'Empty',
+                'message' => 'Subcentro no encontrado.'
+            ];
+            return response()->json($response, 404);
+        }
+
+
+        $response = [
+            'success' => true,
+            'data' => $data,
+            'message' => 'Subcentro recuperado satisfactoriamente.'
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**

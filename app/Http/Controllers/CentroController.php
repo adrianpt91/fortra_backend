@@ -20,7 +20,8 @@ class CentroController extends Controller
         //$centro = Centro::get();
         //echo json_encode($centro);
 
-        $centros = Centro::all();
+        //$centros = Centro::all();
+        $centros = Centro::with('subcentros')->get();
         $data = $centros->toArray();
 
         $response = [
